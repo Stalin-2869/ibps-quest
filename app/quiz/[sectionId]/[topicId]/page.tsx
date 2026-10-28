@@ -26,29 +26,34 @@ function QuizIntro({
   onStart: () => void;
 }) {
   return (
-    <div className="max-w-lg mx-auto text-center py-12 px-4">
-      <div className={`bg-gradient-to-br ${section.bgGradient} rounded-3xl p-8 mb-6`}>
-        <div className="text-7xl mb-4">{topic.icon}</div>
-        <h1 className="text-2xl font-black text-white mb-2">{topic.title}</h1>
-        <p className="text-white/70">{topic.description}</p>
-      </div>
-      <div className="bg-gray-900 rounded-2xl p-6 mb-6 space-y-3 border border-gray-800">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Questions</span>
-          <span className="text-white font-bold">{topic.questions.length}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">XP Reward</span>
-          <span className="text-yellow-400 font-bold">⭐ Up to {topic.xpReward} XP</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Negative Marking</span>
-          <span className="text-red-400 font-bold">−0.25 per wrong</span>
+    <div className="max-w-lg mx-auto text-center py-12 px-4 fade-in-up">
+      <div className={`bg-gradient-to-br ${section.bgGradient} rounded-3xl p-8 mb-6 relative overflow-hidden`}>
+        <div className="absolute inset-0 shimmer-bg pointer-events-none" />
+        <div className="relative z-10">
+          <div className="text-7xl mb-4 float inline-block">{topic.icon}</div>
+          <h1 className="text-2xl font-black text-white mb-2">{topic.title}</h1>
+          <p className="text-white/70">{topic.description}</p>
         </div>
       </div>
+
+      <div className="rounded-2xl p-6 mb-6 border border-white/8 space-y-4"
+        style={{ background: "rgba(255,255,255,0.03)" }}>
+        {[
+          { label: "Questions", value: topic.questions.length, color: "text-white" },
+          { label: "XP Reward", value: `⭐ Up to ${topic.xpReward} XP`, color: "text-yellow-400" },
+          { label: "Negative Marking", value: "−0.25 per wrong", color: "text-red-400" },
+        ].map((row) => (
+          <div key={row.label} className="flex justify-between items-center">
+            <span className="text-gray-400 text-sm">{row.label}</span>
+            <span className={`${row.color} font-bold text-sm`}>{row.value}</span>
+          </div>
+        ))}
+      </div>
+
       <button
         onClick={onStart}
-        className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-black text-lg py-4 rounded-2xl hover:scale-105 active:scale-95 transition-transform shadow-lg"
+        className="w-full font-black text-lg py-4 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl"
+        style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)", color: "white" }}
       >
         🚀 Start Quiz!
       </button>
@@ -57,92 +62,83 @@ function QuizIntro({
 }
 
 function QuizResult({
-  correct,
-  total,
-  xpEarned,
-  topicId,
-  sectionId,
-  previousXP,
-  currentXP,
-  onRetry,
+  correct, total, xpEarned, topicId, sectionId, previousXP, currentXP, onRetry,
 }: {
-  correct: number;
-  total: number;
-  xpEarned: number;
-  topicId: string;
-  sectionId: string;
-  previousXP: number;
-  currentXP: number;
-  onRetry: () => void;
+  correct: number; total: number; xpEarned: number;
+  topicId: string; sectionId: string; previousXP: number; currentXP: number; onRetry: () => void;
 }) {
   const pct = Math.round((correct / total) * 100);
   const oldLevel = getLevelFromXP(previousXP);
   const newLevel = getLevelFromXP(currentXP);
   const leveledUp = newLevel.level > oldLevel.level;
 
-  let emoji = "😢";
-  let msg = "Keep practicing! You'll get it!";
+  let emoji = "😢"; let msg = "Keep practicing! You'll get it!";
   if (pct === 100) { emoji = "🎉"; msg = "PERFECT! You're unstoppable!"; }
   else if (pct >= 80) { emoji = "🌟"; msg = "Excellent work! Almost perfect!"; }
   else if (pct >= 60) { emoji = "👏"; msg = "Good job! Keep it up!"; }
   else if (pct >= 40) { emoji = "💪"; msg = "You're getting there!"; }
 
   return (
-    <div className="max-w-lg mx-auto text-center py-12 px-4">
+    <div className="max-w-lg mx-auto text-center py-12 px-4 fade-in-up">
       {leveledUp && (
-        <div className="badge-pop bg-gradient-to-r from-yellow-500 to-orange-500 rounded-3xl p-6 mb-6 text-black">
+        <div className="badge-pop rounded-3xl p-6 mb-6 shadow-2xl"
+          style={{ background: "linear-gradient(135deg, #eab308, #f97316)", color: "#000" }}>
           <div className="text-5xl mb-2">⬆️</div>
           <h2 className="text-2xl font-black">LEVEL UP!</h2>
           <p className="font-bold">Level {newLevel.level} — {newLevel.title}</p>
         </div>
       )}
 
-      <div className="text-8xl mb-4">{emoji}</div>
-      <h2 className="text-3xl font-black text-white mb-2">{msg}</h2>
+      <div className="text-7xl mb-4">{emoji}</div>
+      <h2 className="text-3xl font-black text-white mb-6">{msg}</h2>
 
-      <div className="bg-gray-900 rounded-3xl p-6 mb-6 space-y-4 border border-gray-800">
-        {/* Score circle */}
-        <div className="relative w-32 h-32 mx-auto">
+      <div className="rounded-3xl p-6 mb-6 border border-white/8 space-y-6"
+        style={{ background: "rgba(255,255,255,0.03)" }}>
+        {/* Score ring */}
+        <div className="relative w-36 h-36 mx-auto">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1f2937" strokeWidth="3.2" />
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
             <circle
               cx="18" cy="18" r="15.9" fill="none"
               stroke={pct >= 80 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444"}
-              strokeWidth="3.2"
+              strokeWidth="3"
               strokeDasharray={`${pct} 100`}
               strokeLinecap="round"
-              style={{ transition: "stroke-dasharray 1s ease" }}
+              style={{ transition: "stroke-dasharray 1.2s ease", filter: `drop-shadow(0 0 6px ${pct >= 80 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444"})` }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={`text-3xl font-black ${pct >= 80 ? "text-green-400" : pct >= 60 ? "text-yellow-400" : "text-red-400"}`}>{pct}%</span>
+            <span className={`text-3xl font-black ${pct >= 80 ? "text-emerald-400" : pct >= 60 ? "text-yellow-400" : "text-red-400"}`}>
+              {pct}%
+            </span>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-gray-800 rounded-xl p-3">
-            <p className="text-green-400 font-black text-xl">{correct}</p>
-            <p className="text-gray-400 text-xs">Correct</p>
-          </div>
-          <div className="bg-gray-800 rounded-xl p-3">
-            <p className="text-red-400 font-black text-xl">{total - correct}</p>
-            <p className="text-gray-400 text-xs">Wrong</p>
-          </div>
-          <div className="bg-gray-800 rounded-xl p-3">
-            <p className="text-yellow-400 font-black text-xl">+{xpEarned}</p>
-            <p className="text-gray-400 text-xs">XP Earned</p>
-          </div>
+          {[
+            { value: correct, label: "Correct", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+            { value: total - correct, label: "Wrong", color: "text-red-400", bg: "bg-red-500/10" },
+            { value: `+${xpEarned}`, label: "XP Earned", color: "text-yellow-400", bg: "bg-yellow-500/10" },
+          ].map((s) => (
+            <div key={s.label} className={`${s.bg} rounded-2xl p-3 border border-white/5`}>
+              <p className={`${s.color} font-black text-xl`}>{s.value}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{s.label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="space-y-3">
         <button
           onClick={onRetry}
-          className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform"
+          className="w-full font-bold py-3.5 rounded-2xl text-white transition-all hover:scale-105 active:scale-95"
+          style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}
         >
           🔄 Try Again
         </button>
-        <Link href={`/section/${sectionId}`} className="block w-full bg-gray-800 text-gray-300 font-bold py-3 rounded-xl hover:bg-gray-700 transition-colors text-center">
+        <Link href={`/section/${sectionId}`}
+          className="block w-full py-3.5 rounded-2xl text-gray-300 font-bold text-center transition-colors border border-white/8 hover:bg-white/5"
+          style={{ background: "rgba(255,255,255,0.04)" }}>
           ← Back to Section
         </Link>
         <Link href="/" className="block w-full text-gray-500 py-2 text-sm hover:text-gray-300 transition-colors text-center">
@@ -193,15 +189,12 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
       const baseXP = Math.round(topic.xpReward / topic.questions.length);
       setXpEarned((x) => x + baseXP);
     } else {
-      // Negative marking simulation: reduce XP slightly
       setXpEarned((x) => Math.max(0, x - Math.round(topic.xpReward / (topic.questions.length * 4))));
     }
   }, [showAnswer, questions, currentIdx, topic.xpReward, topic.questions.length]);
 
   const handleNext = useCallback(() => {
     if (currentIdx + 1 >= questions.length) {
-      // Done
-      const finalCorrect = correct + (selected === questions[currentIdx].answer ? 0 : 0); // already counted in handleSelect
       finishQuiz(topic.id, correct, questions.length, xpEarned);
       setPhase("result");
     } else {
@@ -209,30 +202,30 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
       setSelected(null);
       setShowAnswer(false);
     }
-  }, [currentIdx, questions, correct, finishQuiz, topic.id, xpEarned, selected]);
+  }, [currentIdx, questions, correct, finishQuiz, topic.id, xpEarned]);
+
+  const bgStyle = { background: "linear-gradient(160deg, #080812 0%, #0d0d20 50%, #0a0818 100%)" };
 
   if (phase === "intro") return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-indigo-950">
-      <div className="bg-gray-950/80 backdrop-blur border-b border-gray-800 sticky top-0 z-40">
+    <main className="min-h-screen" style={bgStyle}>
+      <header className="sticky top-0 z-40 border-b border-white/8"
+        style={{ background: "rgba(8,8,18,0.85)", backdropFilter: "blur(20px)" }}>
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href={`/section/${sectionId}`} className="text-gray-400 hover:text-white text-sm">← {section.title}</Link>
+          <Link href={`/section/${sectionId}`} className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
+            ← {section.title}
+          </Link>
         </div>
-      </div>
+      </header>
       <QuizIntro topic={topic} section={section} onStart={startQuiz} />
     </main>
   );
 
   if (phase === "result") return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-indigo-950">
+    <main className="min-h-screen" style={bgStyle}>
       <QuizResult
-        correct={correct}
-        total={questions.length}
-        xpEarned={xpEarned}
-        topicId={topicId}
-        sectionId={sectionId}
-        previousXP={previousXP}
-        currentXP={stats.totalXP}
-        onRetry={startQuiz}
+        correct={correct} total={questions.length} xpEarned={xpEarned}
+        topicId={topicId} sectionId={sectionId} previousXP={previousXP}
+        currentXP={stats.totalXP} onRetry={startQuiz}
       />
     </main>
   );
@@ -241,69 +234,83 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
   const progress = ((currentIdx + (showAnswer ? 1 : 0)) / questions.length) * 100;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-indigo-950">
-      {/* Progress bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-gray-800 z-50">
+    <main className="min-h-screen" style={bgStyle}>
+      {/* Top progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 z-50" style={{ background: "rgba(255,255,255,0.04)" }}>
         <div
           className={`h-full bg-gradient-to-r ${section.bgGradient} transition-all duration-500`}
-          style={{ width: `${progress}%` }}
+          style={{ width: `${progress}%`, filter: "drop-shadow(0 0 4px rgba(99,102,241,0.8))" }}
         />
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-4 py-8 pt-10">
         {/* Quiz Header */}
         <div className="flex items-center justify-between mb-6">
-          <Link href={`/section/${sectionId}`} className="text-gray-500 hover:text-gray-300 text-sm">✕ Quit</Link>
+          <Link href={`/section/${sectionId}`}
+            className="text-gray-500 hover:text-gray-300 text-sm font-medium transition-colors flex items-center gap-1">
+            ✕ Quit
+          </Link>
           <div className="text-center">
-            <p className="text-gray-400 text-sm">{topic.title}</p>
-            <p className="text-white font-bold">{currentIdx + 1} / {questions.length}</p>
+            <p className="text-gray-400 text-xs font-medium">{topic.title}</p>
+            <p className="text-white font-black">{currentIdx + 1} <span className="text-gray-500 font-normal">/ {questions.length}</span></p>
           </div>
           <div className="text-right">
-            <p className="text-yellow-400 text-sm font-bold">⭐ {xpEarned} XP</p>
-            <p className="text-green-400 text-xs">{correct} correct</p>
+            <p className="text-yellow-400 text-sm font-black">⭐ {xpEarned}</p>
+            <p className="text-emerald-400 text-xs">{correct} correct</p>
           </div>
         </div>
 
         {/* Difficulty badge */}
-        <div className="mb-4">
-          <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-            q.difficulty === "easy" ? "bg-green-500/20 text-green-400 border border-green-500/30" :
-            q.difficulty === "medium" ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" :
-            "bg-red-500/20 text-red-400 border border-red-500/30"
+        <div className="mb-5">
+          <span className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full border ${
+            q.difficulty === "easy" ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25" :
+            q.difficulty === "medium" ? "bg-yellow-500/15 text-yellow-400 border-yellow-500/25" :
+            "bg-red-500/15 text-red-400 border-red-500/25"
           }`}>
             {q.difficulty === "easy" ? "🟢 Easy" : q.difficulty === "medium" ? "🟡 Medium" : "🔴 Hard"}
           </span>
         </div>
 
-        {/* Question */}
-        <div className="bg-gray-900 rounded-2xl p-6 mb-6 border border-gray-800">
-          <p className="text-white text-lg font-medium leading-relaxed whitespace-pre-line">{q.question}</p>
+        {/* Question card */}
+        <div className="rounded-2xl p-6 mb-6 border border-white/8 scale-in"
+          style={{ background: "rgba(255,255,255,0.04)" }}>
+          <p className="text-white text-lg font-semibold leading-relaxed whitespace-pre-line">{q.question}</p>
         </div>
 
         {/* Options */}
         <div className="space-y-3 mb-6">
           {q.options.map((opt, i) => {
-            let classes = "w-full text-left p-4 rounded-xl border transition-all duration-200 font-medium ";
+            let style: React.CSSProperties = {};
+            let className = "option-btn w-full text-left p-4 rounded-2xl border font-medium text-sm ";
+
             if (!showAnswer) {
-              classes += selected === i
-                ? "border-indigo-500 bg-indigo-500/20 text-white"
-                : "border-gray-700 bg-gray-900 text-gray-300 hover:border-gray-500 hover:bg-gray-800";
+              if (selected === i) {
+                className += "border-indigo-400 text-white";
+                style = { background: "rgba(99,102,241,0.2)" };
+              } else {
+                className += "border-white/8 text-gray-300 hover:border-white/20 hover:bg-white/5";
+                style = { background: "rgba(255,255,255,0.03)" };
+              }
             } else {
               if (i === q.answer) {
-                classes += "border-green-500 bg-green-500/20 text-green-300";
+                className += "border-emerald-500 text-emerald-300";
+                style = { background: "rgba(16,185,129,0.12)" };
               } else if (i === selected && i !== q.answer) {
-                classes += "border-red-500 bg-red-500/20 text-red-300";
+                className += "border-red-500 text-red-300";
+                style = { background: "rgba(239,68,68,0.12)" };
               } else {
-                classes += "border-gray-800 bg-gray-900/50 text-gray-500";
+                className += "border-white/5 text-gray-600";
+                style = { background: "rgba(255,255,255,0.01)" };
               }
             }
+
             return (
-              <button key={i} className={classes} onClick={() => handleSelect(i)}>
+              <button key={i} className={className} style={style} onClick={() => handleSelect(i)}>
                 <span className="inline-flex items-center gap-3">
-                  <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                    showAnswer && i === q.answer ? "border-green-500 bg-green-500 text-white" :
+                  <span className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-black flex-shrink-0 transition-all ${
+                    showAnswer && i === q.answer ? "border-emerald-500 bg-emerald-500 text-white" :
                     showAnswer && i === selected && i !== q.answer ? "border-red-500 bg-red-500 text-white" :
-                    "border-gray-600"
+                    "border-white/20 text-gray-400"
                   }`}>
                     {showAnswer && i === q.answer ? "✓" : showAnswer && i === selected ? "✗" : String.fromCharCode(65 + i)}
                   </span>
@@ -316,15 +323,18 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
 
         {/* Explanation */}
         {showAnswer && (
-          <div className={`rounded-2xl p-4 mb-6 border ${
-            selected === q.answer
-              ? "bg-green-500/10 border-green-500/30"
-              : "bg-red-500/10 border-red-500/30"
-          }`}>
-            <p className="text-sm font-bold text-gray-300 mb-1">
-              {selected === q.answer ? "✅ Correct!" : "❌ Incorrect"}
+          <div className={`rounded-2xl p-4 mb-6 border scale-in ${
+            selected === q.answer ? "border-emerald-500/25" : "border-red-500/25"
+          }`} style={{
+            background: selected === q.answer ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)"
+          }}>
+            <p className="text-sm font-bold mb-1">
+              {selected === q.answer
+                ? <span className="text-emerald-400">✅ Correct!</span>
+                : <span className="text-red-400">❌ Incorrect</span>
+              }
             </p>
-            <p className="text-sm text-gray-400">{q.explanation}</p>
+            <p className="text-sm text-gray-300 leading-relaxed">{q.explanation}</p>
           </div>
         )}
 
@@ -332,7 +342,8 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
         {showAnswer && (
           <button
             onClick={handleNext}
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-4 rounded-2xl hover:scale-105 active:scale-95 transition-transform"
+            className="w-full font-black py-4 rounded-2xl text-white transition-all hover:scale-105 active:scale-95 shadow-xl fade-in-up"
+            style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}
           >
             {currentIdx + 1 >= questions.length ? "🏁 Finish Quiz!" : "Next Question →"}
           </button>
@@ -341,4 +352,3 @@ export default function QuizPage({ params }: { params: Promise<{ sectionId: stri
     </main>
   );
 }
-
