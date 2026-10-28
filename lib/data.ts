@@ -875,3 +875,4 @@ export const DEFAULT_STATS: UserStats = {
   totalCorrect: 0,
   totalAnswered: 0,
 };
+
